@@ -13,6 +13,25 @@ Monitors the [Fantasy Premier League](https://fantasy.premierleague.com) homepag
 
 ---
 
+## ⚙️ GitHub Actions Workflow
+
+This project includes a GitHub Actions workflow to automate running the watcher in the cloud.
+
+- The workflow is defined in [`.github/workflows/fpl-watcher.yml`](.github/workflows/fpl-watcher.yml).
+- It runs the watcher script on a schedule (every 3 minutes by default).
+- Secrets such as `BOT_TOKEN` and `CHAT_ID` must be set in your repository's **Settings > Secrets and variables > Actions**.
+
+**To use the workflow:**
+
+1. [Fork this repository](https://github.com/yourusername/fpl-launch-watcher/fork).
+2. Go to your fork's **Settings > Secrets and variables > Actions**.
+3. Add the following secrets:
+    - `BOT_TOKEN` — your Telegram bot token
+    - `CHAT_ID` — your Telegram chat ID
+4. The workflow will run automatically on the defined schedule and send alerts via Telegram when FPL goes live.
+
+---
+
 ## 🚀 Setup Instructions
 
 ### 1. Clone the Repo
@@ -148,12 +167,6 @@ Built to save FPL fanatics from refreshing every 30 seconds.
 
 ---
 
-## 📎 Example Screenshot
-
-![FPL Launch Watcher Screenshot](https://example.com/screenshot.png)
-
----
-
 ## 📂 File Structure
 
 ```
@@ -164,5 +177,8 @@ Built to save FPL fanatics from refreshing every 30 seconds.
 ├── LICENSE
 ├── .gitignore
 ├── requirements.txt
-└── README.md
+├── README.md
+└── .github
+    └── workflows
+        └── fpl-launch.yml
 ```
