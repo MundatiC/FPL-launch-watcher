@@ -1,7 +1,6 @@
 name: FPL Launch Watcher
 
 on:
-  push:                        # 👉 Trigger on any push
   schedule:
     - cron: "*/6 * * * *"      # ⏰ Every 6 minutes
   workflow_dispatch:           # 🧪 Manual run from GitHub UI
