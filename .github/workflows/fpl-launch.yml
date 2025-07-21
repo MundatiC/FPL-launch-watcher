@@ -1,9 +1,7 @@
 name: FPL Launch Watcher
 
 on:
-  schedule:
-    - cron: "*/6 * * * *"      # ⏰ Every 6 minutes
-  workflow_dispatch:           # 🧪 Manual run from GitHub UI
+  workflow_dispatch:           # 🧪 Manual run or triggered via external POST
 
 jobs:
   check-fpl:
