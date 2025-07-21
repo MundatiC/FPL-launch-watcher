@@ -6,6 +6,7 @@
 import os
 import time
 import requests
+import cloudscraper
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
@@ -18,30 +19,45 @@ CHAT_ID = os.getenv("CHAT_ID")      # Replace with your Telegram chat ID
 
 
 def is_fpl_live():
-    url = "https://fantasy.premierleague.com"
-    headers = {"User-Agent": "Mozilla/5.0"}
+    api_url = "https://fantasy.premierleague.com/api/bootstrap-static/"
+    homepage_url = "https://fantasy.premierleague.com"
+    scraper = cloudscraper.create_scraper()
 
+    # === STEP 1: Try hitting the API ===
     try:
-        response = requests.get(url, headers=headers, timeout=10)
-        if response.status_code == 503:
-            print("🔧 FPL server returned 503 — still updating...")
-            return False
-        response.raise_for_status()
-
-        soup = BeautifulSoup(response.text, "html.parser")
-        title = soup.title.string if soup.title else ""
-
-        if "Game Updating" in title:
-            print("🔄 FPL still updating...")
-            return False
+        print("📡 Checking FPL API...")
+        api_response = scraper.get(api_url, timeout=10)
+        if api_response.status_code == 200 and "application/json" in api_response.headers.get("Content-Type", ""):
+            print("✅ FPL API is live!")
+            return True
         else:
-            print("✅ FPL is likely LIVE!")
+            print(f"🔄 FPL API returned {api_response.status_code} – falling back to homepage...")
+    except Exception as e:
+        print(f"⚠️ API error: {e} – falling back to homepage...")
+
+    # === STEP 2: Check the homepage ===
+    try:
+        homepage_response = scraper.get(homepage_url, timeout=10)
+        html = homepage_response.text  # Don't raise_for_status – we still want to inspect 503 pages
+
+        content_type = homepage_response.headers.get("Content-Type", "")
+        if "html" in content_type:
+            soup = BeautifulSoup(html, "html.parser")
+            title_text = soup.title.string.strip().lower() if soup.title else ""
+
+            if "game updating" in title_text:
+                print("🔄 Homepage title still says 'Game Updating' – not live.")
+                return False
+            else:
+                print("✅ Homepage no longer shows 'Game Updating' – might be live!")
+                return True
+        else:
+            print("✅ Homepage returned non-HTML (e.g., JSON) – assuming live.")
             return True
 
     except Exception as e:
-        print(f"⚠️ Error checking FPL: {e}")
+        print(f"⚠️ Homepage error: {e}")
         return False
-
 
 def send_telegram_alert(message):
     """
