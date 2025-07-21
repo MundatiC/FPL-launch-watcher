@@ -63,14 +63,24 @@ python-dotenv
 2. Send `/start`
 3. Note your Telegram user ID (e.g. `987654321`)
 
-#### 🔹 Create a `.env` File
+#### 🔹 Use the Provided `.env.example` File
 
-Create a file named `.env` in the project root:
+A `.env.example` file is included in the repo to show which environment variables are needed. To set up your own secrets:
 
-```
-BOT_TOKEN=your_actual_bot_token
-CHAT_ID=your_actual_chat_id
-```
+1. Copy `.env.example` to a new file named `.env` in the project root:
+
+    ```bash
+    cp .env.example .env
+    # On Windows:
+    # copy .env.example .env
+    ```
+
+2. Open `.env` and fill in your actual `BOT_TOKEN` and `CHAT_ID`:
+
+    ```
+    BOT_TOKEN=your_actual_bot_token
+    CHAT_ID=your_actual_chat_id
+    ```
 
 ❗ **Important:** Do **not** commit your `.env` file. Add this to `.gitignore`:
 
@@ -150,6 +160,8 @@ Built to save FPL fanatics from refreshing every 30 seconds.
 .
 ├── fpl_watcher.py
 ├── .env
+├── .env.example
+├── LICENSE
 ├── .gitignore
 ├── requirements.txt
 └── README.md
