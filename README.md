@@ -62,6 +62,7 @@ requests
 beautifulsoup4
 python-dotenv
 cloudscraper
+time
 ```
 
 ### 4. Set Up Your `.env` File

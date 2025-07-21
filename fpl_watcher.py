@@ -6,6 +6,7 @@
 import os
 import requests
 import cloudscraper
+import time
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
@@ -59,18 +60,34 @@ def is_fpl_live():
 
 
 def send_telegram_alert(message):
+    """
+    Send a Telegram message with retry on rate limiting (429).
+    """
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {
         "chat_id": CHAT_ID,
         "text": message,
         "parse_mode": "Markdown"
     }
-    try:
-        response = requests.post(url, json=payload)
-        response.raise_for_status()
-        print("📬 Telegram alert sent!")
-    except Exception as e:
-        print(f"⚠️ Failed to send Telegram alert: {e}")
+
+    for attempt in range(3):  # Try up to 3 times
+        try:
+            response = requests.post(url, json=payload)
+            response.raise_for_status()
+            print("📬 Telegram alert sent!")
+            return
+        except requests.exceptions.HTTPError as e:
+            if response.status_code == 429:
+                # Respect Retry-After header if available, fallback to 30s
+                wait_time = int(response.headers.get("Retry-After", 30))
+                print(f"⏳ Rate limited. Waiting {wait_time}s before retrying...")
+                time.sleep(wait_time)
+            else:
+                print(f"⚠️ Telegram error: {e}")
+                break
+        except Exception as e:
+            print(f"⚠️ Unknown error while sending alert: {e}")
+            break
 
 
 def alert_already_sent():
