@@ -15,7 +15,6 @@ load_dotenv()
 # === CONFIGURATION ===
 BOT_TOKEN =  os.getenv("BOT_TOKEN")  # Replace with your Telegram bot token
 CHAT_ID = os.getenv("CHAT_ID")      # Replace with your Telegram chat ID
-CHECK_INTERVAL = 90           # Check every 15 minutes (in seconds)
 
 
 def is_fpl_live():
@@ -70,5 +69,6 @@ if __name__ == "__main__":
     while True:
         if is_fpl_live():
             send_telegram_alert("🎉 *Fantasy Premier League is LIVE!* Time to register your team: https://fantasy.premierleague.com")
-            break
-        time.sleep(CHECK_INTERVAL)
+        else:
+            print("❌ FPL is not live yet.")
+
