@@ -8,6 +8,7 @@ Monitors the [Fantasy Premier League](https://fantasy.premierleague.com) homepag
 
 - Detects the end of the “Game Updating” phase
 - Sends real-time alerts via Telegram
+- Uses `.env` file to securely store secrets
 - Super lightweight and easy to run
 
 ---
@@ -43,11 +44,12 @@ pip install -r requirements.txt
 ```
 requests
 beautifulsoup4
+python-dotenv
 ```
 
 ---
 
-### 4. Set Up Telegram Notifications
+### 4. Set Up Telegram Bot & Environment Variables
 
 #### 🔹 Create a Bot
 
@@ -61,16 +63,20 @@ beautifulsoup4
 2. Send `/start`
 3. Note your Telegram user ID (e.g. `987654321`)
 
-#### 🔹 Update Your Bot Settings
+#### 🔹 Create a `.env` File
 
-Open `fpl_watcher.py` and replace:
+Create a file named `.env` in the project root:
 
-```python
-BOT_TOKEN = "your_actual_bot_token"
-CHAT_ID = "your_actual_chat_id"
+```
+BOT_TOKEN=your_actual_bot_token
+CHAT_ID=your_actual_chat_id
 ```
 
-With your actual bot token and Telegram chat ID.
+❗ **Important:** Do **not** commit your `.env` file. Add this to `.gitignore`:
+
+```
+.env
+```
 
 ---
 
@@ -88,21 +94,20 @@ The script checks the FPL site every 15 minutes by default. Once the site goes l
 
 ## 🧪 Test Your Bot (Optional)
 
-You can manually test your Telegram setup by adding this line in `fpl_watcher.py`:
+You can manually test your Telegram setup by temporarily adding this line in `fpl_watcher.py`:
 
 ```python
 send_telegram_alert("✅ Test message: Your FPL bot is working!")
 ```
 
-Run:
+Then run:
 
 ```bash
 python fpl_watcher.py
 ```
 
-You should receive the test message immediately in Telegram.
-
-Remove the line afterward to avoid duplicate alerts.
+You should receive the test message instantly in Telegram.
+Remove the test line afterward to avoid duplicate alerts.
 
 ---
 
@@ -117,10 +122,10 @@ See the [`LICENSE`](LICENSE) file for details.
 
 Pull requests welcome! You can contribute by:
 
-* Adding Discord or email notifications
-* Scheduling via cron, systemd, or GitHub Actions
-* Packaging for Docker or PyPI
-* Translating instructions
+* Adding Discord, email, or push notifications
+* Automating checks via cron or GitHub Actions
+* Packaging it for Docker or PyPI
+* Translating setup instructions
 
 Fork, improve, and open a PR!
 
@@ -134,16 +139,18 @@ Built to save FPL fanatics from refreshing every 30 seconds.
 ---
 
 ## 📎 Example Screenshot
-![FPL Launch Watcher Screenshot](https://example.com/screenshot.png)
 
-```
+![FPL Launch Watcher Screenshot](https://example.com/screenshot.png)
 
 ---
 
-Let me know if you’d like:
-- The `LICENSE` file content (MIT)
-- An `fpl_watcher.py` starter template included in the repo
-- GitHub Actions or Docker support later
+## 📂 File Structure
 
-Happy deploying!
+```
+.
+├── fpl_watcher.py
+├── .env
+├── .gitignore
+├── requirements.txt
+└── README.md
 ```
