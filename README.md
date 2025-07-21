@@ -10,26 +10,44 @@ Monitors the [Fantasy Premier League](https://fantasy.premierleague.com) homepag
 - Sends real-time alerts via Telegram
 - Uses `.env` file to securely store secrets
 - Uses `cloudscraper` to bypass Cloudflare protection
-- GitHub Actions support for automated cloud monitoring
+- GitHub Actions support for automated cloud monitoring via external scheduler
 
 ---
 
 ## ⚙️ GitHub Actions Workflow
 
-This project includes a GitHub Actions workflow to automate running the watcher in the cloud.
+This project includes a GitHub Actions workflow to run the watcher in the cloud.
 
 - The workflow is defined in [`.github/workflows/fpl-launch.yml`](.github/workflows/fpl-launch.yml).
-- It runs the watcher script on a schedule (every 3 minutes by default).
+- It is designed to be triggered manually or via an external scheduler (like [cron-job.org](https://cron-job.org)).
 - Secrets such as `BOT_TOKEN` and `CHAT_ID` must be set in your repository's **Settings > Secrets and variables > Actions**.
 
-**To use the workflow:**
+### 🔁 External Trigger Setup (Recommended)
 
-1. [Fork this repository](https://github.com/yourusername/fpl-launch-watcher/fork).
-2. Go to your fork's **Settings > Secrets and variables > Actions**.
-3. Add the following secrets:
-    - `BOT_TOKEN` — your Telegram bot token
-    - `CHAT_ID` — your Telegram chat ID
-4. The workflow will run automatically and alert you when FPL goes live.
+To trigger the workflow every few minutes using [cron-job.org](https://cron-job.org):
+
+1. Go to **cron-job.org** and create a new cron job.
+2. Set the **URL** to:
+```
+
+https://api.github.com/repos/YOUR_USERNAME/YOUR_REPO/actions/workflows/fpl-launch.yml/dispatches
+
+````
+3. Use `POST` as the method, and set the request body to:
+```json
+{
+  "ref": "main"
+}
+````
+
+4. Add headers:
+
+   * `Content-Type: application/json`
+   * `Authorization: token YOUR_GITHUB_PAT`
+
+5. Save and set your preferred schedule (e.g. every 6 minutes).
+
+📌 *Make sure your GitHub personal access token (PAT) has `workflow` scope.*
 
 ---
 
@@ -55,43 +73,27 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-**`requirements.txt` contains:**
-
-```
-requests
-beautifulsoup4
-python-dotenv
-cloudscraper
-time
-```
-
 ### 4. Set Up Your `.env` File
 
-1. Copy `.env.example` to `.env`:
-
-    ```bash
-    cp .env.example .env
-    # Windows:
-    # copy .env.example .env
-    ```
-
-2. Fill in your bot credentials:
-
-    ```env
-    BOT_TOKEN=your_actual_bot_token
-    CHAT_ID=your_actual_chat_id
-    ```
+```bash
+cp .env.example .env
+# Then fill in:
+# BOT_TOKEN=your_actual_bot_token
+# CHAT_ID=your_actual_chat_id
+```
 
 ---
 
 ## 💬 Telegram Setup Guide
 
 ### Create a Bot
+
 1. Open [@BotFather](https://t.me/BotFather)
 2. Send `/start` then `/newbot`
 3. Follow the instructions to get your bot token
 
 ### Get Your Chat ID
+
 1. Open [@userinfobot](https://t.me/userinfobot)
 2. Send `/start`
 3. It will show your Telegram user ID (chat ID)
@@ -105,29 +107,14 @@ python fpl_watcher.py
 ```
 
 The script will:
-- First test your bot connection
-- Then check the API and fallback to the homepage
-- Send a Telegram alert when FPL is live
 
-You’ll receive a message like:
+* Send a test message
+* Monitor FPL status
+* Alert you via Telegram when the game goes live
 
-> 🎉 *Fantasy Premier League is LIVE!* Time to register your team: https://fantasy.premierleague.com
+Example alert:
 
----
-
-## 🧪 Test Your Bot (Optional)
-
-You can test by running:
-
-```bash
-python fpl_watcher.py
-```
-
-The first message will be:
-
-> ✅ Test message: Your FPL bot is working!
-
-If you see it, the bot is ready!
+> 🎉 *Fantasy Premier League is LIVE!* Time to register your team: [https://fantasy.premierleague.com](https://fantasy.premierleague.com)
 
 ---
 
@@ -159,16 +146,16 @@ MIT — see [`LICENSE`](LICENSE).
 
 PRs welcome! Ideas for improvement:
 
-- Add Discord, Email, or mobile push notifications
-- Docker support
-- Early-season change monitoring
-- Local JSON snapshot comparison
+* Discord or email alerts
+* Docker support
+* JSON diff for change detection
+* Alert rate limiting / cooldown handling
 
 ---
 
 ## ✨ Credits
 
-Built with Python and coffee ☕
+Built with Python and caffeine ☕
 For every FPL addict tired of pressing F5.
 
 ---
